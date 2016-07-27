@@ -23,6 +23,8 @@ Revision history:
             code.
 5 Nov 2014: Minor changes in existing code. Game is now fully working.
 11 Nov 2014: Changed code to be compatible with Python 3.4
+
+To do: refactoring 
 '''
 
 from time import sleep
