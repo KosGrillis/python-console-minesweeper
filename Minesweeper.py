@@ -28,8 +28,20 @@ To do: refactoring
 '''
 
 from time import sleep
+from enum import Enum
 import random
 import sys
+
+class MessageType(Enum):
+    GAME_START             = 1
+    WIN                    = 2
+    LOSS                   = 3
+    NEW_GAME               = 4
+    INVALID_MOVE           = 5
+    ROW_INDEX_OUT_OF_RANGE = 6
+    COL_INDEX_OUT_OF_RANGE = 7
+    GAME_CLOSE             = 8
+    MOVE_ALREADY_MADE      = 9
 
 #define global variables...
 NUM_MINES = 96
@@ -189,7 +201,7 @@ def print_message(message_type):
     8 - game close
     9 - move already made
     '''
-    if message_type == 1:
+    if message_type == MessageType.GAME_START:
         print('Welcome to Python Minesweeper!') ; sleep(1)
         print()
         print('The board will be initialized with size 25 x 18 and 96 mines...') ; sleep(2)
@@ -198,45 +210,45 @@ def print_message(message_type):
         print()
         print('Let\'s begin!') ; sleep(1)
         print()
-    elif message_type == 2:
+    elif message_type == MessageType.WIN:
         print()
         print('Congradulations! You win!')
-    elif message_type == 3:
+    elif message_type == MessageType.LOSS:
         print()
         print('You hit a mine!') ; sleep(0.5)
         print()
         print('You lose!') ; sleep(0.5)
-    elif message_type == 4:
+    elif message_type == MessageType.NEW_GAME:
         print()
         print('Starting new game...') ; sleep(1)
         print()
         print('The board will be initialized with size 25 x 18 and 96 mines...') ; sleep(2)
-    elif message_type == 5:
+    elif message_type == MessageType.INVALID_MOVE:
         print()
         print('Invalid move!') ; sleep(0.5)
         print()
         print('You must enter a move in the form \'row, col, [flag]\'')
         print()
         next_move()
-    elif message_type == 6:
+    elif message_type == MessageType.ROW_INDEX_OUT_OF_RANGE:
         print()
         print('Invalid move!') ; sleep(0.5)
         print()
         print('Row index must be a number between 1 and 18.')
         print()
         next_move()
-    elif message_type == 7:
+    elif message_type == MessageType.COL_INDEX_OUT_OF_RANGE:
         print()
         print('Invalid move!') ; sleep(0.5)
         print()
         print('Col index must be a letter between A and Y.')
         print()
         next_move()
-    elif message_type == 8:
+    elif message_type == MessageType.GAME_CLOSE:
         print()
         print('Goodbye!') ; sleep(2)
         sys.exit()
-    elif message_type == 9:
+    elif message_type == MessageType.MOVE_ALREADY_MADE:
         print()
         print('Invalid move!') ; sleep(1)
         print()
@@ -261,12 +273,12 @@ def play_again():
                 CURRENT_BOARD[row_index][col_index] = 'O '
 
         #Starts new game...
-        print_message(4)
+        print_message(MessageType.NEW_GAME)
         user_disp(CURRENT_BOARD)
         first_move_hint()
         next_move()
     elif user_input.upper() == 'N':
-        print_message(8)
+        print_message(MessageType.GAME_CLOSE)
 
 def interpret_move(move):
     '''
@@ -524,7 +536,7 @@ def compute_next_state(move):
         if check_win() == False:
              next_move()
         else:
-            print_message(2)
+            print_message(MessageType.WIN)
             play_again()
             
 def next_move():
@@ -541,13 +553,13 @@ def next_move():
     if validate_move(move) == True:
         if check_loss(move) == False:
             if check_board_pos(move) == False:
-                print_message(9)
+                print_message(MessageType.MOVE_ALREADY_MADE)
             else:
                 compute_next_state(move)
         else:
             generate_loss_board()
             user_disp(CURRENT_BOARD)
-            print_message(3)
+            print_message(MessageType.LOSS)
             play_again()
 
     #If invalid move...
@@ -557,7 +569,7 @@ def next_move():
         
     #If the user wants to exit...
     elif validate_move(move) == 'Exception':
-        print_message(8)
+        print_message(MessageType.GAME_CLOSE)
 
 def user_disp(CURRENT_BOARD):
     '''
@@ -580,7 +592,7 @@ def start():
     Is called when the script is run. Sets the user
     up for a new game.
     '''
-    print_message(1)
+    print_message(MessageType.GAME_START)
     user_disp(CURRENT_BOARD)
     first_move_hint()
     next_move()
